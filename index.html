@@ -1,1022 +1,1311 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>slxa - AI Homework Assistant</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        gptBg: '#212121',
-                        gptSidebar: '#171717',
-                        gptInput: '#2f2f2f',
-                        gptHover: '#2a2a2a',
-                        brandGreen: '#10a37f',
-                        brandGreenHover: '#1a7f64',
-                        userBubble: '#303030'
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Marked.js for Markdown -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Highlight.js for Syntax Highlighting -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-    <!-- KaTeX for High-Quality Algebra and Math Rendering -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #212121;
-            color: #ececec;
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #424242;
-            border-radius: 9999px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555555;
-        }
-        /* Markdown & Math formatting styles */
-        .markdown-body {
-            color: #d1d5db;
-            font-size: 0.95rem;
-            line-height: 1.65;
-        }
-        .markdown-body p {
-            margin-bottom: 0.85rem;
-        }
-        .markdown-body p:last-child {
-            margin-bottom: 0;
-        }
-        .markdown-body h1, .markdown-body h2, .markdown-body h3 {
-            color: #f3f4f6;
-            font-weight: 600;
-            margin-top: 1rem;
-            margin-bottom: 0.5rem;
-        }
-        .markdown-body code:not(pre code) {
-            background-color: #2f2f2f;
-            color: #10a37f;
-            padding: 0.15rem 0.35rem;
-            border-radius: 0.375rem;
-            font-size: 0.875em;
-            font-family: monospace;
-        }
-        .markdown-body pre {
-            background-color: #0d0d0d !important;
-            border: 1px solid #333;
-            border-radius: 0.5rem;
-            padding: 0.85rem 1rem;
-            margin: 0.75rem 0;
-            overflow-x: auto;
-        }
-        .markdown-body ul {
-            list-style-type: disc;
-            padding-left: 1.25rem;
-            margin-bottom: 0.75rem;
-        }
-        .markdown-body ol {
-            list-style-type: decimal;
-            padding-left: 1.25rem;
-            margin-bottom: 0.75rem;
-        }
-        .markdown-body blockquote {
-            border-left: 3px solid #10a37f;
-            padding-left: 0.75rem;
-            color: #9ca3af;
-            font-style: italic;
-            margin: 0.75rem 0;
-        }
-        /* Typing cursor effect */
-        .typing-cursor::after {
-            content: '●';
-            color: #10a37f;
-            animation: pulse 0.8s infinite;
-            margin-left: 2px;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-        /* KaTeX Math Styling */
-        .katex-display {
-            overflow-x: auto;
-            overflow-y: hidden;
-            padding: 0.5rem 0;
-            margin: 0.5rem 0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>slxa — AI Assistant</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Markdown & Syntax Highlighting -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+
+  <!-- KaTeX Math Rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    :root {
+      --bg-main: #090a0f;
+      --bg-sidebar: #11131b;
+      --bg-card: #181b26;
+      --bg-input: #1f2333;
+      --accent-primary: #10b981;
+      --accent-hover: #059669;
+      --accent-light: rgba(16, 185, 129, 0.12);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: #2e344a;
+      --user-msg-bg: #222738;
+      --ai-msg-bg: #141722;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease;
+      z-index: 50;
+    }
+
+    .sidebar-header {
+      padding: 18px 16px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -0.5px;
+      color: var(--accent-primary);
+    }
+
+    .brand-badge {
+      font-size: 0.65rem;
+      background: var(--accent-light);
+      border: 1px solid var(--accent-primary);
+      padding: 2px 6px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .new-chat-btn {
+      margin: 14px 16px;
+      padding: 12px;
+      background: var(--accent-primary);
+      color: #000;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .new-chat-btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .chat-history {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 12px;
+    }
+
+    .history-item {
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      transition: background 0.15s ease;
+    }
+
+    .history-item:hover, .history-item.active {
+      background: var(--bg-card);
+      color: var(--text-main);
+    }
+
+    .history-item .title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .history-item .delete-btn {
+      opacity: 0;
+      background: none;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      padding: 4px;
+      transition: opacity 0.2s ease;
+    }
+
+    .history-item:hover .delete-btn { opacity: 1; }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .creator-tag {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 12px;
+    }
+
+    .social-links a {
+      color: var(--accent-primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.8rem;
+    }
+
+    /* Main Container */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: relative;
+    }
+
+    .top-bar {
+      height: 60px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      background: rgba(17, 19, 27, 0.8);
+      backdrop-filter: blur(10px);
+    }
+
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .toggle-sidebar-btn {
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: none;
+    }
+
+    .model-selector {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .top-bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tts-toggle-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tts-toggle-btn.active {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    /* Messages Area */
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      scroll-behavior: smooth;
+    }
+
+    /* Feature Banner */
+    .welcome-banner {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(24, 27, 38, 0.8) 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .banner-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .banner-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .banner-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .banner-card i {
+      color: var(--accent-primary);
+      font-size: 1.1rem;
+    }
+
+    /* Message Item */
+    .message {
+      display: flex;
+      gap: 16px;
+      max-width: 880px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .message.user .avatar {
+      background: #3b82f6;
+      color: #fff;
+    }
+
+    .message.assistant .avatar {
+      background: var(--accent-primary);
+      color: #000;
+    }
+
+    .message-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-x: auto;
+    }
+
+    .sender-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .message-content {
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .message-content p { margin-bottom: 0.8rem; }
+    .message-content p:last-child { margin-bottom: 0; }
+
+    /* Code Blocks */
+    .message-content pre {
+      background: #12141d;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+
+    .message-content code {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+    }
+
+    /* LaTeX / Math Display Fixes */
+    .katex-display {
+      margin: 12px 0 !important;
+      padding: 12px !important;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      border-left: 3px solid var(--accent-primary);
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .katex {
+      font-size: 1.1em !important;
+      color: #f3f4f6 !important;
+    }
+
+    .katex .boxed {
+      border: 2px solid var(--accent-primary) !important;
+      padding: 4px 8px !important;
+      border-radius: 6px !important;
+      background: rgba(16, 185, 129, 0.08) !important;
+      display: inline-block;
+      margin: 2px 0;
+    }
+
+    /* Images in Messages */
+    .message-image {
+      max-width: 300px;
+      max-height: 300px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      margin-top: 8px;
+      cursor: pointer;
+    }
+
+    .generated-ai-image {
+      width: 100%;
+      max-width: 480px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin: 10px 0;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+
+    /* Reasoning Container */
+    .reasoning-box {
+      background: #111420;
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    .reasoning-header {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      user-select: none;
+    }
+
+    .reasoning-content {
+      margin-top: 8px;
+      white-space: pre-wrap;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+    }
+
+    /* Action Buttons under Message */
+    .message-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .msg-action-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.8rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .msg-action-btn:hover {
+      background: var(--bg-card);
+      color: var(--text-main);
+    }
+
+    /* Input Dock */
+    .input-dock-container {
+      padding: 16px 24px 24px 24px;
+      max-width: 880px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .input-box {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color 0.2s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .input-box:focus-within {
+      border-color: var(--accent-primary);
+    }
+
+    .image-preview-bar {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .preview-thumb-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .preview-thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid var(--border-color);
+    }
+
+    .remove-thumb-btn {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.65rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+    }
+
+    textarea {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      resize: none;
+      outline: none;
+      max-height: 200px;
+      min-height: 24px;
+      line-height: 1.5;
+    }
+
+    .input-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn:hover {
+      background: var(--bg-card);
+      color: var(--text-main);
+    }
+
+    .send-btn {
+      background: var(--accent-primary);
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+    }
+
+    .send-btn:hover {
+      background: var(--accent-hover);
+      transform: scale(1.05);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .image-gen-shortcut {
+      font-size: 0.75rem;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-primary);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Modal / Lightbox */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: absolute;
+        height: 100%;
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .toggle-sidebar-btn {
+        display: block;
+      }
+    }
+  </style>
 </head>
-<body class="h-screen w-screen flex overflow-hidden bg-gptBg text-slate-100 antialiased">
+<body>
 
-    <!-- Toast Notification Container -->
-    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <i class="fa-solid fa-brain"></i> slxa
+        <span class="brand-badge">Solo Dev</span>
+      </div>
+      <button class="icon-btn" id="close-sidebar-btn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
 
-    <!-- Mobile Sidebar Backdrop -->
-    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/60 z-30 hidden md:hidden"></div>
+    <button class="new-chat-btn" id="new-chat-btn">
+      <i class="fa-solid fa-plus"></i> New Chat
+    </button>
 
-    <!-- Left Sidebar (Chat History & Options) -->
-    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-40 w-64 bg-gptSidebar flex flex-col border-r border-zinc-800 transition-transform duration-300 transform -translate-x-full md:translate-x-0">
+    <div class="chat-history" id="chat-history"></div>
+
+    <div class="sidebar-footer">
+      <div class="creator-tag">
+        <i class="fa-solid fa-code"></i> Created by Eyob
+      </div>
+      <div class="social-links">
+        <a href="https://www.tiktok.com/@slxa19" target="_blank"><i class="fa-brands fa-tiktok"></i> @slxa19</a>
+        <a href="https://www.instagram.com/slxa19" target="_blank"><i class="fa-brands fa-instagram"></i> @slxa19</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button class="toggle-sidebar-btn" id="toggle-sidebar-btn"><i class="fa-solid fa-bars"></i></button>
+        <select class="model-selector" id="model-select">
+          <option value="openai">GPT-4o (OpenAI Vision & Math)</option>
+          <option value="deepseek">DeepSeek R1 (Reasoning)</option>
+          <option value="qwen">Qwen 2.5 Coder</option>
+          <option value="mistral">Mistral Small</option>
+          <option value="llama">Llama 3.3 70B</option>
+        </select>
+      </div>
+
+      <div class="top-bar-actions">
+        <button class="tts-toggle-btn" id="tts-toggle-btn">
+          <i class="fa-solid fa-volume-high"></i> Voice: <span id="tts-status">OFF</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="chat-container" id="chat-container"></div>
+
+    <!-- Input Dock -->
+    <div class="input-dock-container">
+      <div class="input-box">
+        <div class="image-preview-bar" id="image-preview-bar" style="display: none;"></div>
+        <div class="input-row">
+          <textarea id="user-input" rows="1" placeholder="Ask a homework question, algebra problem, or type '/image prompt' to draw..."></textarea>
+          <div class="input-actions">
+            <button class="image-gen-shortcut" id="image-mode-btn" title="Quick Image Generation">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Draw
+            </button>
+            <input type="file" id="file-input" accept="image/*" style="display: none;">
+            <button class="icon-btn" id="attach-btn" title="Upload Math Photo or Image">
+              <i class="fa-solid fa-paperclip"></i>
+            </button>
+            <button class="send-btn" id="send-btn">
+              <i class="fa-solid fa-arrow-up"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Image Lightbox -->
+  <div class="lightbox" id="lightbox" onclick="this.style.display='none'">
+    <img id="lightbox-img" src="" alt="Enlarged view">
+  </div>
+
+  <script>
+    // --- APP STATE & CONFIG ---
+    const SYSTEM_PROMPT = `You are slxa, an intelligent AI homework assistant created strictly by a single individual named Eyob. 
+- Creator Identity: You were created solely by Eyob (one single person, NOT a team or group).
+- Introduction Rule: When introducing yourself or greeting for the first time, state: "I'm an AI that can help you with your homework. Follow My TikTok and Instagram : slxa19"
+- Social Handles: TikTok & Instagram @slxa19.
+- Math & Algebra Formatting Rules: Always format math formulas using proper standard LaTeX. 
+  For inline math use single dollar signs: $x^2 + y^2 = r^2$ or $\\frac{a}{b}$. 
+  For display/block math use double dollar signs:
+  $$\\frac{x+1}{2} = 5$$
+  Highlight final numerical answers inside \\boxed{...}. Always output stacked fractions like \\frac{a}{b} and never leave raw plain slash text for equations if stacked fractions make it clearer.
+- Text to Image Capability: You can generate images! Tell users to ask you "draw..." or "generate an image of..." or start with "/image".`;
+
+    let state = {
+      chats: JSON.parse(localStorage.getItem('slxa_chats') || '[]'),
+      currentChatId: localStorage.getItem('slxa_current_id') || null,
+      ttsEnabled: localStorage.getItem('slxa_tts') === 'true',
+      attachedImageBase64: null,
+      isStreaming: false
+    };
+
+    // --- DOM ELEMENTS ---
+    const chatContainer = document.getElementById('chat-container');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const fileInput = document.getElementById('file-input');
+    const attachBtn = document.getElementById('attach-btn');
+    const previewBar = document.getElementById('image-preview-bar');
+    const modelSelect = document.getElementById('model-select');
+    const ttsToggleBtn = document.getElementById('tts-toggle-btn');
+    const ttsStatus = document.getElementById('tts-status');
+    const chatHistory = document.getElementById('chat-history');
+    const newChatBtn = document.getElementById('new-chat-btn');
+    const sidebar = document.getElementById('sidebar');
+    const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
+    const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+    const imageModeBtn = document.getElementById('image-mode-btn');
+
+    // --- INITIALIZATION ---
+    function init() {
+      if (!state.chats.length) {
+        createNewChat();
+      } else if (!state.currentChatId || !state.chats.find(c => c.id === state.currentChatId)) {
+        state.currentChatId = state.chats[0].id;
+      }
+
+      updateTTSUI();
+      renderSidebarHistory();
+      renderCurrentChat();
+      setupEventListeners();
+    }
+
+    // --- EVENT LISTENERS ---
+    function setupEventListeners() {
+      userInput.addEventListener('input', autoResizeTextarea);
+      userInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          handleSend();
+        }
+      });
+
+      sendBtn.addEventListener('click', handleSend);
+      newChatBtn.addEventListener('click', () => createNewChat());
+
+      attachBtn.addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', handleFileSelect);
+
+      ttsToggleBtn.addEventListener('click', () => {
+        state.ttsEnabled = !state.ttsEnabled;
+        localStorage.setItem('slxa_tts', state.ttsEnabled);
+        updateTTSUI();
+      });
+
+      toggleSidebarBtn.addEventListener('click', () => sidebar.classList.add('open'));
+      closeSidebarBtn.addEventListener('click', () => sidebar.classList.remove('open'));
+
+      imageModeBtn.addEventListener('click', () => {
+        if (!userInput.value.startsWith('/image ')) {
+          userInput.value = '/image ' + userInput.value;
+        }
+        userInput.focus();
+      });
+    }
+
+    function autoResizeTextarea() {
+      userInput.style.height = 'auto';
+      userInput.style.height = Math.min(userInput.scrollHeight, 200) + 'px';
+    }
+
+    function updateTTSUI() {
+      if (state.ttsEnabled) {
+        ttsToggleBtn.classList.add('active');
+        ttsStatus.textContent = 'ON';
+      } else {
+        ttsToggleBtn.classList.remove('active');
+        ttsStatus.textContent = 'OFF';
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    // --- CHAT MANAGEMENT ---
+    function createNewChat() {
+      const newChat = {
+        id: 'chat_' + Date.now(),
+        title: 'New Homework Chat',
+        messages: [
+          {
+            role: 'assistant',
+            content: "I'm an AI that can help you with your homework. Follow My TikTok and Instagram : slxa19\n\nHow can I help you with your math, algebra, or studies today?"
+          }
+        ]
+      };
+      state.chats.unshift(newChat);
+      state.currentChatId = newChat.id;
+      saveState();
+      renderSidebarHistory();
+      renderCurrentChat();
+    }
+
+    function getCurrentChat() {
+      return state.chats.find(c => c.id === state.currentChatId);
+    }
+
+    function saveState() {
+      localStorage.setItem('slxa_chats', JSON.stringify(state.chats));
+      localStorage.setItem('slxa_current_id', state.currentChatId);
+    }
+
+    function renderSidebarHistory() {
+      chatHistory.innerHTML = '';
+      state.chats.forEach(chat => {
+        const item = document.createElement('div');
+        item.className = `history-item ${chat.id === state.currentChatId ? 'active' : ''}`;
+        item.innerHTML = `
+          <span class="title"><i class="fa-regular fa-message"></i> ${escapeHtml(chat.title)}</span>
+          <button class="delete-btn" title="Delete Chat"><i class="fa-solid fa-trash"></i></button>
+        `;
+        item.addEventListener('click', (e) => {
+          if (e.target.closest('.delete-btn')) {
+            e.stopPropagation();
+            deleteChat(chat.id);
+          } else {
+            state.currentChatId = chat.id;
+            saveState();
+            renderSidebarHistory();
+            renderCurrentChat();
+            sidebar.classList.remove('open');
+          }
+        });
+        chatHistory.appendChild(item);
+      });
+    }
+
+    function deleteChat(id) {
+      state.chats = state.chats.filter(c => c.id !== id);
+      if (state.chats.length === 0) {
+        createNewChat();
+      } else {
+        if (state.currentChatId === id) {
+          state.currentChatId = state.chats[0].id;
+        }
+        saveState();
+        renderSidebarHistory();
+        renderCurrentChat();
+      }
+    }
+
+    // --- FILE HANDLING ---
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        state.attachedImageBase64 = event.target.result;
+        renderImagePreview();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function renderImagePreview() {
+      if (!state.attachedImageBase64) {
+        previewBar.style.display = 'none';
+        previewBar.innerHTML = '';
+        return;
+      }
+      previewBar.style.display = 'flex';
+      previewBar.innerHTML = `
+        <div class="preview-thumb-container">
+          <img src="${state.attachedImageBase64}" class="preview-thumb">
+          <button class="remove-thumb-btn" onclick="clearAttachedImage()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      `;
+    }
+
+    function clearAttachedImage() {
+      state.attachedImageBase64 = null;
+      fileInput.value = '';
+      renderImagePreview();
+    }
+
+    // --- MATH SANITIZER & REAL-TIME PRE-PROCESSOR ---
+    function preprocessMathAndMarkdown(text) {
+      if (!text) return '';
+
+      let processed = text;
+
+      // Convert bracket math delimiters \[ ... \] and \( ... \) into KaTeX standard $$ and $
+      processed = processed.replace(/\\\[([\s\S]*?)\\\]/g, '$$$$ $1 $$$$');
+      processed = processed.replace(/\\\(([\s\S]*?)\\\)/g, '$$ $1 $$');
+
+      // Auto-wrap raw LaTeX equations containing \frac, \sqrt, \boxed, \quad if not already inside $ or $$
+      processed = processed.replace(/(?<!\$)(?<!\S)(\\boxed\{[^}]+\}|\\frac\{[^}]+\}\{[^}]+\}|\\sqrt\{[^}]+\})(?!\$)/g, '$$ $1 $$');
+
+      // Slash-based fraction auto-converter for expressions like (x+1)/2 or 3/4 outside math tags
+      processed = processed.replace(/(?<![\$\w\\])\(([^()]+)\)\/([0-9a-zA-Z]+)(?![\$\w])/g, '$$ \\frac{$1}{$2} $$');
+
+      return processed;
+    }
+
+    // --- MESSAGE RENDERING ---
+    function renderCurrentChat() {
+      chatContainer.innerHTML = '';
+      const chat = getCurrentChat();
+      if (!chat) return;
+
+      // Render Feature Banner if it's a short/new chat
+      if (chat.messages.length <= 2) {
+        const banner = document.createElement('div');
+        banner.className = 'welcome-banner';
+        banner.innerHTML = `
+          <div class="banner-title"><i class="fa-solid fa-sparkles"></i> Welcome to slxa AI</div>
+          <div class="banner-grid">
+            <div class="banner-card"><i class="fa-solid fa-calculator"></i> Visual Algebra & Math Solver</div>
+            <div class="banner-card"><i class="fa-solid fa-image"></i> AI Image Generator (/image)</div>
+            <div class="banner-card"><i class="fa-solid fa-camera"></i> Photo Homework Analyzer</div>
+            <div class="banner-card"><i class="fa-solid fa-user-astronaut"></i> Created by Solo Dev Eyob</div>
+          </div>
+        `;
+        chatContainer.appendChild(banner);
+      }
+
+      chat.messages.forEach((msg, idx) => {
+        appendMessageUI(msg.role, msg.content, msg.image, msg.reasoning, idx);
+      });
+
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function appendMessageUI(role, content, image = null, reasoning = null, index = null) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `message ${role}`;
+
+      const avatar = document.createElement('div');
+      avatar.className = 'avatar';
+      avatar.innerHTML = role === 'user' ? '<i class="fa-solid fa-user"></i>' : '<i class="fa-solid fa-robot"></i>';
+
+      const body = document.createElement('div');
+      body.className = 'message-body';
+
+      const sender = document.createElement('div');
+      sender.className = 'sender-name';
+      sender.textContent = role === 'user' ? 'You' : 'slxa AI';
+
+      body.appendChild(sender);
+
+      // Reasoning box for thinking models
+      if (reasoning) {
+        const reasonBox = document.createElement('div');
+        reasonBox.className = 'reasoning-box';
+        reasonBox.innerHTML = `
+          <div class="reasoning-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+            <i class="fa-solid fa-brain"></i> Thinking Process...
+          </div>
+          <div class="reasoning-content" style="display: none;">${escapeHtml(reasoning)}</div>
+        `;
+        body.appendChild(reasonBox);
+      }
+
+      // Main Content Block
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'message-content';
+
+      // Parse text/markdown & math
+      const formattedText = preprocessMathAndMarkdown(content);
+      contentDiv.innerHTML = marked.parse(formattedText);
+
+      body.appendChild(contentDiv);
+
+      // Attached Image or Image Generation Display
+      if (image) {
+        const imgEl = document.createElement('img');
+        imgEl.className = 'message-image';
+        imgEl.src = image;
+        imgEl.onclick = () => openLightbox(image);
+        body.appendChild(imgEl);
+      }
+
+      // Actions under Assistant Messages
+      if (role === 'assistant') {
+        const actions = document.createElement('div');
+        actions.className = 'message-actions';
         
-        <!-- App Title / Header -->
-        <div class="p-3 border-b border-zinc-800/80 flex items-center justify-between">
-            <div class="flex items-center gap-2 px-2">
-                <div class="w-7 h-7 rounded-lg bg-brandGreen flex items-center justify-center text-white font-bold text-sm">
-                    s
-                </div>
-                <span class="font-bold text-lg text-white tracking-wide">slxa</span>
-            </div>
-            <button id="close-sidebar-btn" class="md:hidden p-2 text-zinc-400 hover:text-white">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
+        const speakBtn = document.createElement('button');
+        speakBtn.className = 'msg-action-btn';
+        speakBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Listen';
+        speakBtn.onclick = () => speakText(content);
 
-        <!-- New Chat Button -->
-        <div class="p-3 pb-1">
-            <button id="new-chat-btn" class="w-full flex items-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-slate-200 rounded-lg text-sm font-medium transition border border-zinc-700/60">
-                <i class="fa-solid fa-plus text-xs"></i>
-                <span>New chat</span>
-            </button>
-        </div>
-
-        <!-- Chat Sessions List -->
-        <div id="chat-sessions-list" class="flex-1 overflow-y-auto p-2 space-y-1">
-            <!-- Dynamic chat sessions inserted here -->
-        </div>
-
-        <!-- Sidebar Footer Controls -->
-        <div class="p-3 border-t border-zinc-800 space-y-3 bg-zinc-900/40 text-xs">
-            
-            <!-- Voice Speech Settings -->
-            <div class="bg-zinc-800/60 rounded-lg p-2.5 space-y-2 border border-zinc-700/40">
-                <div class="flex items-center justify-between">
-                    <span class="font-semibold text-slate-300 flex items-center gap-1.5">
-                        <i class="fa-solid fa-volume-high text-brandGreen"></i> Read Responses
-                    </span>
-                    <input id="auto-speak-toggle" type="checkbox" class="w-4 h-4 accent-brandGreen rounded cursor-pointer">
-                </div>
-                <div class="space-y-1">
-                    <label class="text-[11px] text-zinc-400">Speech Voice</label>
-                    <select id="voice-select" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-slate-200 focus:outline-none focus:border-brandGreen truncate">
-                        <option value="">Default System Voice</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Social Links & Creator Info -->
-            <div class="px-2 py-1 text-[11px] text-zinc-400 space-y-1 bg-zinc-800/30 rounded-lg border border-zinc-800">
-                <div class="flex items-center justify-between">
-                    <span>Created by: <strong class="text-slate-200">eyob</strong></span>
-                </div>
-                <div class="flex items-center gap-2 text-zinc-300">
-                    <i class="fa-brands fa-tiktok text-brandGreen"></i>
-                    <i class="fa-brands fa-instagram text-brandGreen"></i>
-                    <span>Follow: <strong class="text-brandGreen">slxa19</strong></span>
-                </div>
-            </div>
-
-            <!-- Clear All Chats -->
-            <button id="clear-all-sessions-btn" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-red-500/10 text-zinc-400 hover:text-red-400 transition text-xs">
-                <i class="fa-solid fa-trash-can"></i>
-                <span>Clear all conversations</span>
-            </button>
-        </div>
-    </aside>
-
-    <!-- Main Workspace -->
-    <main class="flex-1 flex flex-col h-full relative overflow-hidden bg-gptBg">
-        
-        <!-- Header Bar -->
-        <header class="flex items-center justify-between px-4 py-3 border-b border-zinc-800/80 bg-gptBg/90 backdrop-blur z-10">
-            <div class="flex items-center gap-3">
-                <button id="toggle-sidebar-btn" class="md:hidden text-zinc-400 hover:text-white p-1">
-                    <i class="fa-solid fa-bars text-lg"></i>
-                </button>
-                
-                <!-- Model Selector Dropdown -->
-                <div class="relative inline-block">
-                    <button id="model-dropdown-btn" class="flex items-center gap-2 text-sm font-semibold text-slate-200 hover:bg-zinc-800/80 px-3 py-1.5 rounded-lg transition">
-                        <span id="current-model-name">slxa Standard (GPT-4o Vision)</span>
-                        <i class="fa-solid fa-chevron-down text-xs text-zinc-400"></i>
-                    </button>
-                    <div id="model-dropdown-menu" class="hidden absolute top-full left-0 mt-1 w-64 bg-zinc-800 border border-zinc-700 rounded-xl shadow-2xl py-1 z-50">
-                        <!-- Dynamic model options -->
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-2">
-                <button id="stop-speaking-btn" class="hidden px-2.5 py-1 rounded-full bg-red-500/20 text-red-400 hover:bg-red-500/30 text-xs font-medium flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-volume-xmark"></i> Stop Speech
-                </button>
-                <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-800 border border-zinc-700 text-xs text-zinc-300">
-                    <span class="w-2 h-2 rounded-full bg-brandGreen animate-pulse"></span>
-                    <span>slxa online</span>
-                </div>
-            </div>
-        </header>
-
-        <!-- Chat Scrolling Messages Area -->
-        <div id="chat-container" class="flex-1 overflow-y-auto px-4 md:px-0 py-6 space-y-6">
-            <div id="messages-list" class="max-w-3xl mx-auto space-y-6"></div>
-        </div>
-
-        <!-- Sticky Bottom Chat Input Container -->
-        <div class="p-4 bg-gptBg">
-            <div class="max-w-3xl mx-auto relative">
-                
-                <!-- Attached Image Preview Container -->
-                <div id="image-preview-container" class="hidden mb-2 relative inline-block">
-                    <img id="image-preview" src="" alt="Homework preview" class="h-20 w-auto rounded-lg border border-brandGreen object-cover shadow-lg">
-                    <button id="remove-image-btn" type="button" class="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shadow-md">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-
-                <!-- Chat Input Form -->
-                <form id="chat-form" class="relative bg-gptInput border border-zinc-700/70 rounded-2xl p-2 shadow-2xl focus-within:border-zinc-500 transition">
-                    <!-- File Input Hidden -->
-                    <input type="file" id="image-input" accept="image/*" class="hidden">
-                    
-                    <div class="flex items-end gap-2 px-1">
-                        <!-- Upload Image Button -->
-                        <button type="button" id="upload-image-btn" class="p-2 text-zinc-400 hover:text-brandGreen hover:bg-zinc-800 rounded-xl transition flex items-center justify-center" title="Upload Homework or Math Problem Image">
-                            <i class="fa-solid fa-paperclip text-lg"></i>
-                        </button>
-
-                        <!-- Text Input -->
-                        <textarea 
-                            id="user-input" 
-                            rows="1" 
-                            placeholder="Ask slxa a homework question or upload an algebra problem..." 
-                            class="w-full bg-transparent text-slate-100 placeholder-zinc-500 py-2 focus:outline-none resize-none max-h-40 text-sm md:text-base leading-relaxed"
-                        ></textarea>
-
-                        <!-- Action Buttons -->
-                        <div class="flex items-center gap-1">
-                            <button 
-                                type="button" 
-                                id="stop-btn" 
-                                class="hidden w-8 h-8 rounded-full bg-zinc-700 hover:bg-zinc-600 text-slate-200 transition flex items-center justify-center text-xs"
-                                title="Stop Generating"
-                            >
-                                <i class="fa-solid fa-square"></i>
-                            </button>
-                            <button 
-                                type="submit" 
-                                id="send-btn" 
-                                class="w-8 h-8 rounded-full bg-white text-black hover:bg-slate-200 transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-xs font-bold"
-                            >
-                                <i class="fa-solid fa-arrow-up"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-                <div class="text-center mt-2 flex items-center justify-center gap-3 text-[11px] text-zinc-500">
-                    <span>slxa by eyob • TikTok & Instagram: @slxa19</span>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Application JavaScript Logic -->
-    <script>
-        // System Persona Definition
-        const INITIAL_GREETING = "Hello! I'm slxa, an AI created by eyob that can help you with your homework. Follow My TikTok and Instagram : slxa19";
-        const SYSTEM_PROMPT = `You are "slxa", an advanced AI assistant created by "eyob". Your primary expertise is helping students with homework, algebra, mathematics, science, coding, and general study topics.
-When solving math or algebra problems:
-1. Provide step-by-step clear explanations.
-2. Format all mathematical symbols and equations using LaTeX syntax enclosed in standard single dollar signs ($e=mc^2$) for inline math or double dollar signs ($$\\frac{a}{b}$$) for block math.
-3. If an image is provided, carefully read the problem or handwritten algebra equations and solve them completely.
-Always maintain a helpful, friendly, and smart persona.`;
-
-        // Application State
-        const state = {
-            sessions: [],
-            currentSessionId: null,
-            isGenerating: false,
-            abortController: null,
-            selectedModel: 'openai',
-            attachedBase64Image: null,
-            autoSpeak: false,
-            selectedVoice: null,
-            availableVoices: [],
-            availableModels: [
-                { id: 'openai', name: 'slxa Standard (GPT-4o Vision)' },
-                { id: 'qwen', name: 'Qwen AI (Math & Reasoning)' },
-                { id: 'llama', name: 'Meta LLaMA 3' },
-                { id: 'mistral', name: 'Mistral AI' },
-                { id: 'deepseek', name: 'DeepSeek Reasoning' }
-            ]
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'msg-action-btn';
+        copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy';
+        copyBtn.onclick = () => {
+          navigator.clipboard.writeText(content);
+          copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+          setTimeout(() => copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy', 2000);
         };
 
-        // DOM Elements
-        const chatContainer = document.getElementById('chat-container');
-        const messagesList = document.getElementById('messages-list');
-        const chatForm = document.getElementById('chat-form');
-        const userInput = document.getElementById('user-input');
-        const sendBtn = document.getElementById('send-btn');
-        const stopBtn = document.getElementById('stop-btn');
-        const imageInput = document.getElementById('image-input');
-        const uploadImageBtn = document.getElementById('upload-image-btn');
-        const imagePreviewContainer = document.getElementById('image-preview-container');
-        const imagePreview = document.getElementById('image-preview');
-        const removeImageBtn = document.getElementById('remove-image-btn');
+        actions.appendChild(speakBtn);
+        actions.appendChild(copyBtn);
+        body.appendChild(actions);
+      }
 
-        // Sidebar & Header DOM
-        const sidebar = document.getElementById('sidebar');
-        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
-        const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
-        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
-        const chatSessionsList = document.getElementById('chat-sessions-list');
-        const newChatBtn = document.getElementById('new-chat-btn');
-        const clearAllSessionsBtn = document.getElementById('clear-all-sessions-btn');
+      msgDiv.appendChild(avatar);
+      msgDiv.appendChild(body);
+      chatContainer.appendChild(msgDiv);
 
-        // Dropdowns & Voice DOM
-        const modelDropdownBtn = document.getElementById('model-dropdown-btn');
-        const modelDropdownMenu = document.getElementById('model-dropdown-menu');
-        const currentModelName = document.getElementById('current-model-name');
-        const autoSpeakToggle = document.getElementById('auto-speak-toggle');
-        const voiceSelect = document.getElementById('voice-select');
-        const stopSpeakingBtn = document.getElementById('stop-speaking-btn');
+      // Render KaTeX Math
+      renderMathInElement(contentDiv, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
 
-        // Initialization
-        document.addEventListener('DOMContentLoaded', () => {
-            configureMarkdown();
-            loadSpeechVoices();
-            loadStateFromLocalStorage();
-            renderModelDropdown();
-            setupEventListeners();
+      // Highlight Code
+      contentDiv.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightElement(block);
+      });
 
-            if (state.sessions.length === 0) {
-                createNewSession();
-            } else if (!state.currentSessionId) {
-                switchSession(state.sessions[0].id);
-            } else {
-                switchSession(state.currentSessionId);
-            }
+      return { msgDiv, contentDiv, body };
+    }
+
+    // --- SEND & STREAMING LOGIC ---
+    async function handleSend() {
+      const text = userInput.value.trim();
+      const attachedImg = state.attachedImageBase64;
+
+      if (!text && !attachedImg) return;
+      if (state.isStreaming) return;
+
+      const chat = getCurrentChat();
+
+      // Check if user is requesting Image Generation directly
+      if (text.toLowerCase().startsWith('/image ') || text.toLowerCase().startsWith('generate an image') || text.toLowerCase().startsWith('draw ')) {
+        await handleImageGeneration(text);
+        return;
+      }
+
+      // Update Chat Title on first query
+      if (chat.messages.length <= 1) {
+        chat.title = text.slice(0, 30) || 'Image Problem';
+        renderSidebarHistory();
+      }
+
+      // Push User Message
+      const userMsg = { role: 'user', content: text, image: attachedImg };
+      chat.messages.push(userMsg);
+
+      // Reset Inputs
+      userInput.value = '';
+      autoResizeTextarea();
+      clearAttachedImage();
+
+      renderCurrentChat();
+      state.isStreaming = true;
+      sendBtn.disabled = true;
+
+      // Prepare AI Message UI placeholder
+      const { msgDiv, contentDiv, body } = appendMessageUI('assistant', '...');
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      let fullResponse = '';
+      let reasoningContent = '';
+      let reasoningBoxEl = null;
+
+      try {
+        const payloadMessages = [
+          { role: 'system', content: SYSTEM_PROMPT }
+        ];
+
+        // Attach previous chat context
+        chat.messages.forEach(m => {
+          if (m.image) {
+            payloadMessages.push({
+              role: m.role,
+              content: [
+                { type: 'text', text: m.content || 'Analyze this image:' },
+                { type: 'image_url', image_url: { url: m.image } }
+              ]
+            });
+          } else {
+            payloadMessages.push({ role: m.role, content: m.content });
+          }
         });
 
-        // Markdown Setup
-        function configureMarkdown() {
-            marked.setOptions({
-                highlight: function(code, lang) {
-                    const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-                    return hljs.highlight(code, { language }).value;
-                },
-                langPrefix: 'hljs language-',
-                breaks: true
-            });
-        }
+        const selectedModel = modelSelect.value;
+        const response = await fetch('https://text.pollinations.ai/openai', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: payloadMessages,
+            model: selectedModel,
+            stream: true
+          })
+        });
 
-        // Web Speech Voices Setup
-        function loadSpeechVoices() {
-            if ('speechSynthesis' in window) {
-                const updateVoiceList = () => {
-                    state.availableVoices = window.speechSynthesis.getVoices();
-                    voiceSelect.innerHTML = '<option value="">Default System Voice</option>';
-                    state.availableVoices.forEach((voice, index) => {
-                        const opt = document.createElement('option');
-                        opt.value = index;
-                        opt.textContent = `${voice.name} (${voice.lang})`;
-                        voiceSelect.appendChild(opt);
-                    });
-                };
-                updateVoiceList();
-                if (window.speechSynthesis.onvoiceschanged !== undefined) {
-                    window.speechSynthesis.onvoiceschanged = updateVoiceList;
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith(':')) continue;
+            if (trimmed === 'data: [DONE]') break;
+
+            if (trimmed.startsWith('data: ')) {
+              try {
+                const json = JSON.parse(trimmed.slice(6));
+                const delta = json.choices[0]?.delta || {};
+
+                // Intercept reasoning / thinking deltas
+                if (delta.reasoning || delta.thought) {
+                  reasoningContent += (delta.reasoning || delta.thought);
+                  if (!reasoningBoxEl) {
+                    reasoningBoxEl = document.createElement('div');
+                    reasoningBoxEl.className = 'reasoning-box';
+                    reasoningBoxEl.innerHTML = `
+                      <div class="reasoning-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                        <i class="fa-solid fa-brain"></i> Thinking Process...
+                      </div>
+                      <div class="reasoning-content">${escapeHtml(reasoningContent)}</div>
+                    `;
+                    body.insertBefore(reasoningBoxEl, contentDiv);
+                  } else {
+                    reasoningBoxEl.querySelector('.reasoning-content').textContent = reasoningContent;
+                  }
                 }
-            } else {
-                autoSpeakToggle.disabled = true;
-            }
-        }
 
-        // Text-to-Speech Function
-        function speakText(text) {
-            if (!('speechSynthesis' in window)) return;
-            
-            window.speechSynthesis.cancel();
-            stopSpeakingBtn.classList.remove('hidden');
+                // Append regular response deltas
+                if (delta.content) {
+                  fullResponse += delta.content;
+                  const formatted = preprocessMathAndMarkdown(fullResponse);
+                  contentDiv.innerHTML = marked.parse(formatted);
 
-            // Strip mathematical markdown & code for fluid spoken reading
-            const plainText = text.replace(/```[\s\S]*?```/g, ' Code snippet omitted. ')
-                                  .replace(/\$\$[\s\S]*?\$\$/g, ' Math formula ')
-                                  .replace(/\$[^$]+\$/g, ' formula ')
-                                  .replace(/[*_~#]/g, '')
-                                  .trim();
-
-            if (!plainText) return;
-
-            const utterance = new SpeechSynthesisUtterance(plainText);
-            if (state.selectedVoice !== null && state.availableVoices[state.selectedVoice]) {
-                utterance.voice = state.availableVoices[state.selectedVoice];
-            }
-            utterance.rate = 1.0;
-            utterance.pitch = 1.0;
-
-            utterance.onend = () => stopSpeakingBtn.classList.add('hidden');
-            utterance.onerror = () => stopSpeakingBtn.classList.add('hidden');
-
-            window.speechSynthesis.speak(utterance);
-        }
-
-        // Event Listeners
-        function setupEventListeners() {
-            userInput.addEventListener('input', () => {
-                userInput.style.height = 'auto';
-                userInput.style.height = Math.min(userInput.scrollHeight, 160) + 'px';
-            });
-
-            userInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    if ((userInput.value.trim() || state.attachedBase64Image) && !state.isGenerating) {
-                        chatForm.dispatchEvent(new Event('submit'));
-                    }
-                }
-            });
-
-            chatForm.addEventListener('submit', handleMessageSubmit);
-            stopBtn.addEventListener('click', stopGeneration);
-            stopSpeakingBtn.addEventListener('click', () => {
-                window.speechSynthesis.cancel();
-                stopSpeakingBtn.classList.add('hidden');
-            });
-
-            // Image Attachment Handlers
-            uploadImageBtn.addEventListener('click', () => imageInput.click());
-            imageInput.addEventListener('change', handleImageSelect);
-            removeImageBtn.addEventListener('click', clearAttachedImage);
-
-            // Sidebar & Navigation
-            toggleSidebarBtn.addEventListener('click', openSidebar);
-            closeSidebarBtn.addEventListener('click', closeSidebar);
-            sidebarBackdrop.addEventListener('click', closeSidebar);
-            newChatBtn.addEventListener('click', () => createNewSession());
-            clearAllSessionsBtn.addEventListener('click', clearAllSessions);
-
-            // Model Selector Dropdown
-            modelDropdownBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                modelDropdownMenu.classList.toggle('hidden');
-            });
-            document.addEventListener('click', () => modelDropdownMenu.classList.add('hidden'));
-
-            // Voice Config
-            autoSpeakToggle.addEventListener('change', (e) => {
-                state.autoSpeak = e.target.checked;
-                saveStateToLocalStorage();
-            });
-            voiceSelect.addEventListener('change', (e) => {
-                state.selectedVoice = e.target.value !== "" ? parseInt(e.target.value) : null;
-                saveStateToLocalStorage();
-            });
-        }
-
-        // Image Attachment Handler
-        function handleImageSelect(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            if (!file.type.startsWith('image/')) {
-                showToast('Please select a valid image file.', 'error');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                state.attachedBase64Image = event.target.result;
-                imagePreview.src = event.target.result;
-                imagePreviewContainer.classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function clearAttachedImage() {
-            state.attachedBase64Image = null;
-            imageInput.value = '';
-            imagePreview.src = '';
-            imagePreviewContainer.classList.add('hidden');
-        }
-
-        // Model Dropdown Renderer
-        function renderModelDropdown() {
-            modelDropdownMenu.innerHTML = '';
-            state.availableModels.forEach(m => {
-                const btn = document.createElement('button');
-                btn.className = 'w-full text-left px-4 py-2 text-xs text-slate-200 hover:bg-zinc-700 transition flex items-center justify-between';
-                btn.innerHTML = `<span>${m.name}</span> ${state.selectedModel === m.id ? '<i class="fa-solid fa-check text-brandGreen"></i>' : ''}`;
-                btn.addEventListener('click', () => {
-                    state.selectedModel = m.id;
-                    currentModelName.textContent = m.name;
-                    renderModelDropdown();
-                    saveStateToLocalStorage();
-                });
-                modelDropdownMenu.appendChild(btn);
-            });
-        }
-
-        // LocalStorage Management
-        function saveStateToLocalStorage() {
-            const dataToSave = {
-                sessions: state.sessions,
-                currentSessionId: state.currentSessionId,
-                selectedModel: state.selectedModel,
-                autoSpeak: state.autoSpeak,
-                selectedVoice: state.selectedVoice
-            };
-            localStorage.setItem('slxa_chat_state', JSON.stringify(dataToSave));
-        }
-
-        function loadStateFromLocalStorage() {
-            const saved = localStorage.getItem('slxa_chat_state');
-            if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    state.sessions = parsed.sessions || [];
-                    state.currentSessionId = parsed.currentSessionId || null;
-                    state.selectedModel = parsed.selectedModel || 'openai';
-                    state.autoSpeak = parsed.autoSpeak || false;
-                    state.selectedVoice = parsed.selectedVoice !== undefined ? parsed.selectedVoice : null;
-
-                    autoSpeakToggle.checked = state.autoSpeak;
-                    const mObj = state.availableModels.find(m => m.id === state.selectedModel);
-                    if (mObj) currentModelName.textContent = mObj.name;
-                } catch (e) {
-                    console.error('Error loading stored chats', e);
-                }
-            }
-        }
-
-        // Sidebar Navigation
-        function openSidebar() {
-            sidebar.classList.remove('-translate-x-full');
-            sidebarBackdrop.classList.remove('hidden');
-        }
-
-        function closeSidebar() {
-            sidebar.classList.add('-translate-x-full');
-            sidebarBackdrop.classList.add('hidden');
-        }
-
-        // Session Handling
-        function createNewSession() {
-            const newSession = {
-                id: 'session-' + Date.now(),
-                title: 'Homework Chat',
-                messages: [
-                    {
-                        role: 'assistant',
-                        content: INITIAL_GREETING
-                    }
-                ]
-            };
-            state.sessions.unshift(newSession);
-            switchSession(newSession.id);
-            closeSidebar();
-        }
-
-        function switchSession(sessionId) {
-            state.currentSessionId = sessionId;
-            renderSessionsList();
-            renderMessages();
-            saveStateToLocalStorage();
-        }
-
-        function clearAllSessions() {
-            if (confirm('Are you sure you want to delete all chat history?')) {
-                state.sessions = [];
-                state.currentSessionId = null;
-                createNewSession();
-                showToast('All chat conversations cleared.', 'info');
-            }
-        }
-
-        function renderSessionsList() {
-            chatSessionsList.innerHTML = '';
-            state.sessions.forEach(sess => {
-                const isActive = sess.id === state.currentSessionId;
-                const div = document.createElement('div');
-                div.className = `group flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-xs ${isActive ? 'bg-zinc-800 text-white font-medium' : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-slate-200'}`;
-                
-                div.innerHTML = `
-                    <div class="flex items-center gap-2 truncate flex-1">
-                        <i class="fa-regular fa-message text-xs text-brandGreen"></i>
-                        <span class="truncate">${escapeHtml(sess.title)}</span>
-                    </div>
-                    <button class="delete-sess-btn hidden group-hover:block p-1 text-zinc-500 hover:text-red-400 transition" title="Delete session">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                `;
-
-                div.addEventListener('click', (e) => {
-                    if (e.target.closest('.delete-sess-btn')) return;
-                    switchSession(sess.id);
-                });
-
-                div.querySelector('.delete-sess-btn').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    deleteSession(sess.id);
-                });
-
-                chatSessionsList.appendChild(div);
-            });
-        }
-
-        function deleteSession(sessionId) {
-            state.sessions = state.sessions.filter(s => s.id !== sessionId);
-            if (state.sessions.length === 0) {
-                createNewSession();
-            } else {
-                if (state.currentSessionId === sessionId) {
-                    switchSession(state.sessions[0].id);
-                } else {
-                    renderSessionsList();
-                    saveStateToLocalStorage();
-                }
-            }
-        }
-
-        function getCurrentSession() {
-            return state.sessions.find(s => s.id === state.currentSessionId);
-        }
-
-        // Render Conversation Messages
-        function renderMessages() {
-            const currentSession = getCurrentSession();
-            if (!currentSession) return;
-
-            messagesList.innerHTML = '';
-            currentSession.messages.forEach(msg => {
-                appendMessageToDOM(msg.role, msg.content, msg.imageUrl || null, msg.reasoning || null, false);
-            });
-
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        // Render Individual Message
-        function appendMessageToDOM(role, content, imageUrl = null, reasoning = null, isStreaming = false, customId = null) {
-            const isUser = role === 'user';
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `flex gap-3 md:gap-4 ${isUser ? 'justify-end' : 'justify-start'} animate-fade-in`;
-            if (customId) msgDiv.id = customId;
-
-            const avatar = isUser ? `
-                <div class="w-7 h-7 rounded-full bg-brandGreen text-white flex items-center justify-center text-xs font-bold shrink-0">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-            ` : `
-                <div class="w-7 h-7 rounded-full bg-zinc-800 border border-brandGreen/50 text-brandGreen flex items-center justify-center text-xs font-bold shrink-0">
-                    s
-                </div>
-            `;
-
-            // Display Attached Image if Present
-            let imageHTML = '';
-            if (imageUrl) {
-                imageHTML = `<div class="mb-2"><img src="${imageUrl}" class="max-h-60 rounded-xl border border-zinc-700 object-contain"></div>`;
-            }
-
-            // Reasoning / Thinking Box
-            let reasoningHTML = '';
-            if (reasoning) {
-                reasoningHTML = `
-                    <details class="mb-3 border border-zinc-700/60 rounded-lg bg-zinc-900/50 text-xs">
-                        <summary class="p-2 cursor-pointer text-zinc-400 hover:text-slate-200 font-mono flex items-center gap-1.5 select-none">
-                            <i class="fa-solid fa-brain text-brandGreen"></i> Thinking Process...
-                        </summary>
-                        <div class="p-3 border-t border-zinc-800 text-zinc-400 font-mono text-[11px] leading-relaxed whitespace-pre-wrap">${escapeHtml(reasoning)}</div>
-                    </details>
-                `;
-            }
-
-            const bodyClass = isUser 
-                ? 'bg-userBubble text-slate-100 rounded-2xl rounded-tr-none px-4 py-3' 
-                : 'text-slate-200 w-full';
-
-            msgDiv.innerHTML = `
-                ${!isUser ? avatar : ''}
-                <div class="max-w-[88%] md:max-w-[80%] space-y-1">
-                    <div class="${bodyClass}">
-                        ${imageHTML}
-                        ${reasoningHTML}
-                        <div class="msg-content markdown-body ${isStreaming ? 'typing-cursor' : ''}">${isUser ? escapeHtml(content) : marked.parse(content || '')}</div>
-                    </div>
-                    ${!isUser ? `
-                        <div class="flex items-center gap-3 pt-1 text-[11px] text-zinc-500">
-                            <button class="copy-btn hover:text-slate-300 transition"><i class="fa-regular fa-copy"></i> Copy</button>
-                            <button class="speak-btn hover:text-slate-300 transition"><i class="fa-solid fa-volume-high"></i> Listen</button>
-                        </div>
-                    ` : ''}
-                </div>
-                ${isUser ? avatar : ''}
-            `;
-
-            // Action Handlers
-            if (!isUser) {
-                msgDiv.querySelector('.copy-btn').addEventListener('click', () => {
-                    copyToClipboard(content);
-                    showToast('Copied to clipboard!', 'success');
-                });
-                msgDiv.querySelector('.speak-btn').addEventListener('click', () => {
-                    speakText(content);
-                });
-            }
-
-            messagesList.appendChild(msgDiv);
-
-            // Render LaTeX Equations with KaTeX
-            if (!isUser && window.renderMathInElement) {
-                renderMathInElement(msgDiv.querySelector('.msg-content'), {
+                  renderMathInElement(contentDiv, {
                     delimiters: [
-                        {left: '$$', right: '$$', display: true},
-                        {left: '$', right: '$', display: false},
-                        {left: '\\(', right: '\\)', display: false},
-                        {left: '\\[', right: '\\]', display: true}
+                      {left: '$$', right: '$$', display: true},
+                      {left: '$', right: '$', display: false}
                     ],
                     throwOnError: false
-                });
-            }
-
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-            return msgDiv;
-        }
-
-        // Submit User Question & Attached Homework Image
-        async function handleMessageSubmit(e) {
-            e.preventDefault();
-            const text = userInput.value.trim();
-            const image = state.attachedBase64Image;
-
-            if ((!text && !image) || state.isGenerating) return;
-
-            const session = getCurrentSession();
-            if (!session) return;
-
-            // Set Chat Title from prompt
-            if (session.messages.length <= 1 && text) {
-                session.title = text.slice(0, 30) + (text.length > 30 ? '...' : '');
-                renderSessionsList();
-            }
-
-            // Append User Message
-            const userMsgObj = { role: 'user', content: text || 'Please solve this homework/algebra problem.' };
-            if (image) userMsgObj.imageUrl = image;
-
-            session.messages.push(userMsgObj);
-            appendMessageToDOM('user', userMsgObj.content, image);
-
-            // Clear Input
-            userInput.value = '';
-            userInput.style.height = 'auto';
-            clearAttachedImage();
-
-            setGeneratingState(true);
-
-            // AI Response Placeholder
-            const tempMsgId = 'ai-msg-' + Date.now();
-            appendMessageToDOM('assistant', '', null, null, true, tempMsgId);
-
-            await generateResponse(session, tempMsgId);
-        }
-
-        // Call Pollinations AI API with Multimodal Vision Payload
-        async function generateResponse(session, elementId) {
-            state.abortController = new AbortController();
-
-            // Construct API Payload with History & Vision Image URLs
-            const payloadMessages = [
-                { role: 'system', content: SYSTEM_PROMPT },
-                ...session.messages.map(m => {
-                    if (m.imageUrl) {
-                        return {
-                            role: m.role,
-                            content: [
-                                { type: 'text', text: m.content || 'Solve or read this image:' },
-                                { type: 'image_url', image_url: { url: m.imageUrl } }
-                            ]
-                        };
-                    }
-                    return { role: m.role, content: m.content };
-                })
-            ];
-
-            const msgDiv = document.getElementById(elementId);
-            const contentContainer = msgDiv.querySelector('.msg-content');
-
-            let accumulatedText = '';
-            let accumulatedReasoning = '';
-
-            try {
-                const response = await fetch('https://text.pollinations.ai/openai', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        messages: payloadMessages,
-                        model: state.selectedModel,
-                        temperature: 0.5,
-                        stream: true
-                    }),
-                    signal: state.abortController.signal
-                });
-
-                if (!response.ok) throw new Error(`API error HTTP ${response.status}`);
-
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder('utf-8');
-                let buffer = '';
-
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-
-                    buffer += decoder.decode(value, { stream: true });
-                    const lines = buffer.split('\n');
-                    buffer = lines.pop() || '';
-
-                    for (let line of lines) {
-                        const trimmed = line.trim();
-                        if (!trimmed || trimmed.startsWith(':')) continue;
-
-                        if (trimmed.startsWith('data: ')) {
-                            const dataStr = trimmed.slice(6).trim();
-                            if (dataStr === '[DONE]') break;
-
-                            try {
-                                const parsed = JSON.parse(dataStr);
-                                const delta = parsed.choices?.[0]?.delta;
-
-                                if (delta) {
-                                    if (delta.reasoning || delta.thought) {
-                                        accumulatedReasoning += (delta.reasoning || delta.thought);
-                                    }
-                                    if (delta.content) {
-                                        accumulatedText += delta.content;
-                                    }
-                                }
-                            } catch {
-                                accumulatedText += dataStr;
-                            }
-                        } else {
-                            accumulatedText += trimmed + '\n';
-                        }
-
-                        // Update reasoning UI if model is thinking
-                        if (accumulatedReasoning && !msgDiv.querySelector('details')) {
-                            const details = document.createElement('details');
-                            details.className = 'mb-3 border border-zinc-700/60 rounded-lg bg-zinc-900/50 text-xs';
-                            details.innerHTML = `
-                                <summary class="p-2 cursor-pointer text-zinc-400 hover:text-slate-200 font-mono flex items-center gap-1.5 select-none">
-                                    <i class="fa-solid fa-brain text-brandGreen animate-pulse"></i> Thinking Process...
-                                </summary>
-                                <div class="reasoning-body p-3 border-t border-zinc-800 text-zinc-400 font-mono text-[11px] leading-relaxed whitespace-pre-wrap"></div>
-                            `;
-                            contentContainer.parentNode.insertBefore(details, contentContainer);
-                        }
-
-                        if (accumulatedReasoning && msgDiv.querySelector('.reasoning-body')) {
-                            msgDiv.querySelector('.reasoning-body').textContent = accumulatedReasoning;
-                        }
-
-                        // Stream Markdown Render
-                        contentContainer.innerHTML = marked.parse(accumulatedText);
-                        
-                        // Render math in real-time if KaTeX available
-                        if (window.renderMathInElement) {
-                            renderMathInElement(contentContainer, {
-                                delimiters: [
-                                    {left: '$$', right: '$$', display: true},
-                                    {left: '$', right: '$', display: false},
-                                    {left: '\\(', right: '\\)', display: false},
-                                    {left: '\\[', right: '\\]', display: true}
-                                ],
-                                throwOnError: false
-                            });
-                        }
-
-                        chatContainer.scrollTop = chatContainer.scrollHeight;
-                    }
+                  });
                 }
-
-                // Append finalized message to history
-                const finalMsgObj = { 
-                    role: 'assistant', 
-                    content: accumulatedText,
-                    reasoning: accumulatedReasoning || null 
-                };
-                session.messages.push(finalMsgObj);
-                saveStateToLocalStorage();
-
-                // Speak response if voice active
-                if (state.autoSpeak && accumulatedText) {
-                    speakText(accumulatedText);
-                }
-
-            } catch (err) {
-                if (err.name === 'AbortError') {
-                    showToast('Response stopped.', 'info');
-                    if (accumulatedText) {
-                        session.messages.push({ role: 'assistant', content: accumulatedText, reasoning: accumulatedReasoning });
-                        saveStateToLocalStorage();
-                    }
-                } else {
-                    console.error(err);
-                    showToast('Failed to connect to slxa server.', 'error');
-                    contentContainer.innerHTML = `<span class="text-red-400"><i class="fa-solid fa-triangle-exclamation me-1"></i> Connection error. Please try again or re-upload the image.</span>`;
-                }
-            } finally {
-                contentContainer.classList.remove('typing-cursor');
-                contentContainer.querySelectorAll('pre code').forEach((block) => {
-                    hljs.highlightElement(block);
-                });
-                setGeneratingState(false);
                 chatContainer.scrollTop = chatContainer.scrollHeight;
+              } catch (err) {
+                // Ignore chunk parse errors
+              }
             }
+          }
         }
 
-        // Stop Generation
-        function stopGeneration() {
-            if (state.abortController) {
-                state.abortController.abort();
-            }
+        // Finalize Assistant Message
+        const assistantMsg = {
+          role: 'assistant',
+          content: fullResponse,
+          reasoning: reasoningContent || null
+        };
+        chat.messages.push(assistantMsg);
+        saveState();
+
+        if (state.ttsEnabled) {
+          speakText(fullResponse);
         }
 
-        // Toggle Generating State
-        function setGeneratingState(isGenerating) {
-            state.isGenerating = isGenerating;
-            sendBtn.disabled = isGenerating;
-            sendBtn.classList.toggle('hidden', isGenerating);
-            stopBtn.classList.toggle('hidden', !isGenerating);
-        }
+      } catch (error) {
+        contentDiv.innerHTML = `<p style="color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Error connecting to AI. Please try again.</p>`;
+      } finally {
+        state.isStreaming = false;
+        sendBtn.disabled = false;
+        renderCurrentChat();
+      }
+    }
 
-        // Helper: Toast Notifications
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            
-            const bg = type === 'error' ? 'bg-red-900/90 border-red-500' : 
-                       type === 'success' ? 'bg-emerald-900/90 border-emerald-500' : 'bg-zinc-800 border-zinc-700';
-            
-            toast.className = `${bg} border text-white text-xs px-3.5 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 transition duration-300 pointer-events-auto`;
-            toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-xmark text-red-400' : type === 'success' ? 'fa-circle-check text-emerald-400' : 'fa-circle-info text-brandGreen'}"></i><span>${message}</span>`;
+    // --- TEXT TO IMAGE GENERATION ---
+    async function handleImageGeneration(promptText) {
+      let cleanPrompt = promptText.replace(/^\/image\s*/i, '').replace(/^generate an image of\s*/i, '').replace(/^draw\s*/i, '');
+      if (!cleanPrompt) cleanPrompt = 'colorful abstract homework math pattern';
 
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
+      const chat = getCurrentChat();
+      chat.messages.push({ role: 'user', content: promptText });
 
-        // Helper: Copy Text
-        function copyToClipboard(text) {
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(text);
-            } else {
-                const area = document.createElement("textarea");
-                area.value = text;
-                area.style.position = "fixed";
-                area.style.left = "-999999px";
-                document.body.appendChild(area);
-                area.focus();
-                area.select();
-                document.execCommand('copy');
-                area.remove();
-            }
-        }
+      userInput.value = '';
+      renderCurrentChat();
 
-        // Helper: Escape HTML
-        function escapeHtml(str) {
-            return (str || '').replace(/[&<>"']/g, function(m) {
-                return {
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#039;'
-                }[m];
-            });
-        }
-    </script>
+      state.isStreaming = true;
+      sendBtn.disabled = true;
+
+      const encodedPrompt = encodeURIComponent(cleanPrompt);
+      const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random() * 1000000)}`;
+
+      const assistantMsg = {
+        role: 'assistant',
+        content: `Here is the image generated for: **"${escapeHtml(cleanPrompt)}"**`,
+        image: imageUrl
+      };
+
+      chat.messages.push(assistantMsg);
+      saveState();
+
+      setTimeout(() => {
+        state.isStreaming = false;
+        sendBtn.disabled = false;
+        renderCurrentChat();
+      }, 1000);
+    }
+
+    // --- TEXT TO SPEECH ---
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+
+      // Clean Markdown tags and Math equations before reading
+      const cleanText = text
+        .replace(/\$\$[\s\S]*?\$\$/g, ' mathematical equation ')
+        .replace(/\$.*?\$/g, ' equation ')
+        .replace(/[*_#`~]/g, '')
+        .replace(/\[.*?\]\(.*?\)/g, '');
+
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+
+      const voices = window.speechSynthesis.getVoices();
+      const preferredVoice = voices.find(v => v.lang.includes('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha')));
+      if (preferredVoice) utterance.voice = preferredVoice;
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // --- UTILS ---
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function openLightbox(src) {
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lightbox-img');
+      lbImg.src = src;
+      lb.style.display = 'flex';
+    }
+
+    // Run Initialization
+    init();
+  </script>
 </body>
 </html>
+

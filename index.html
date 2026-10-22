@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatGPT - Pollinations AI Studio</title>
-    <!-- Tailwind CSS -->
+    <title>slxa - AI Homework Assistant</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -31,6 +31,10 @@
     <!-- Highlight.js for Syntax Highlighting -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <!-- KaTeX for High-Quality Algebra and Math Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body {
@@ -53,7 +57,7 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #555555;
         }
-        /* Markdown formatting styles */
+        /* Markdown & Math formatting styles */
         .markdown-body {
             color: #d1d5db;
             font-size: 0.95rem;
@@ -104,7 +108,7 @@
             font-style: italic;
             margin: 0.75rem 0;
         }
-        /* Streaming Blinking Cursor */
+        /* Typing cursor effect */
         .typing-cursor::after {
             content: '●';
             color: #10a37f;
@@ -114,6 +118,13 @@
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0; }
+        }
+        /* KaTeX Math Styling */
+        .katex-display {
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 0.5rem 0;
+            margin: 0.5rem 0;
         }
     </style>
 </head>
@@ -128,46 +139,62 @@
     <!-- Left Sidebar (Chat History & Options) -->
     <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-40 w-64 bg-gptSidebar flex flex-col border-r border-zinc-800 transition-transform duration-300 transform -translate-x-full md:translate-x-0">
         
-        <!-- Sidebar Top Header -->
+        <!-- App Title / Header -->
         <div class="p-3 border-b border-zinc-800/80 flex items-center justify-between">
-            <button id="new-chat-btn" class="flex-1 flex items-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-slate-200 rounded-lg text-sm font-medium transition border border-zinc-700/60">
-                <i class="fa-solid fa-plus text-xs"></i>
-                <span>New chat</span>
-            </button>
-            <button id="close-sidebar-btn" class="md:hidden ml-2 p-2 text-zinc-400 hover:text-white">
+            <div class="flex items-center gap-2 px-2">
+                <div class="w-7 h-7 rounded-lg bg-brandGreen flex items-center justify-center text-white font-bold text-sm">
+                    s
+                </div>
+                <span class="font-bold text-lg text-white tracking-wide">slxa</span>
+            </div>
+            <button id="close-sidebar-btn" class="md:hidden p-2 text-zinc-400 hover:text-white">
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
 
-        <!-- Chat Conversations List -->
-        <div id="chat-sessions-list" class="flex-1 overflow-y-auto p-2 space-y-1">
-            <!-- Dynamic session items inserted here -->
+        <!-- New Chat Button -->
+        <div class="p-3 pb-1">
+            <button id="new-chat-btn" class="w-full flex items-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-slate-200 rounded-lg text-sm font-medium transition border border-zinc-700/60">
+                <i class="fa-solid fa-plus text-xs"></i>
+                <span>New chat</span>
+            </button>
         </div>
 
-        <!-- Sidebar Settings & Voice Controls -->
+        <!-- Chat Sessions List -->
+        <div id="chat-sessions-list" class="flex-1 overflow-y-auto p-2 space-y-1">
+            <!-- Dynamic chat sessions inserted here -->
+        </div>
+
+        <!-- Sidebar Footer Controls -->
         <div class="p-3 border-t border-zinc-800 space-y-3 bg-zinc-900/40 text-xs">
             
-            <!-- Voice Audio Settings -->
+            <!-- Voice Speech Settings -->
             <div class="bg-zinc-800/60 rounded-lg p-2.5 space-y-2 border border-zinc-700/40">
                 <div class="flex items-center justify-between">
                     <span class="font-semibold text-slate-300 flex items-center gap-1.5">
-                        <i class="fa-solid fa-volume-high text-brandGreen"></i> Auto Voice Speech
+                        <i class="fa-solid fa-volume-high text-brandGreen"></i> Read Responses
                     </span>
                     <input id="auto-speak-toggle" type="checkbox" class="w-4 h-4 accent-brandGreen rounded cursor-pointer">
                 </div>
                 <div class="space-y-1">
-                    <label class="text-[11px] text-zinc-400">Select Voice</label>
+                    <label class="text-[11px] text-zinc-400">Speech Voice</label>
                     <select id="voice-select" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-slate-200 focus:outline-none focus:border-brandGreen truncate">
                         <option value="">Default System Voice</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Model & System Settings Modal Opener -->
-            <button id="open-settings-btn" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-zinc-800 text-slate-300 transition text-xs">
-                <i class="fa-solid fa-sliders text-zinc-400"></i>
-                <span>Model & Persona Settings</span>
-            </button>
+            <!-- Social Links & Creator Info -->
+            <div class="px-2 py-1 text-[11px] text-zinc-400 space-y-1 bg-zinc-800/30 rounded-lg border border-zinc-800">
+                <div class="flex items-center justify-between">
+                    <span>Created by: <strong class="text-slate-200">eyob</strong></span>
+                </div>
+                <div class="flex items-center gap-2 text-zinc-300">
+                    <i class="fa-brands fa-tiktok text-brandGreen"></i>
+                    <i class="fa-brands fa-instagram text-brandGreen"></i>
+                    <span>Follow: <strong class="text-brandGreen">slxa19</strong></span>
+                </div>
+            </div>
 
             <!-- Clear All Chats -->
             <button id="clear-all-sessions-btn" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-red-500/10 text-zinc-400 hover:text-red-400 transition text-xs">
@@ -190,11 +217,11 @@
                 <!-- Model Selector Dropdown -->
                 <div class="relative inline-block">
                     <button id="model-dropdown-btn" class="flex items-center gap-2 text-sm font-semibold text-slate-200 hover:bg-zinc-800/80 px-3 py-1.5 rounded-lg transition">
-                        <span id="current-model-name">ChatGPT (OpenAI)</span>
+                        <span id="current-model-name">slxa Standard (GPT-4o Vision)</span>
                         <i class="fa-solid fa-chevron-down text-xs text-zinc-400"></i>
                     </button>
-                    <div id="model-dropdown-menu" class="hidden absolute top-full left-0 mt-1 w-56 bg-zinc-800 border border-zinc-700 rounded-xl shadow-2xl py-1 z-50">
-                        <!-- Dynamic options will load -->
+                    <div id="model-dropdown-menu" class="hidden absolute top-full left-0 mt-1 w-64 bg-zinc-800 border border-zinc-700 rounded-xl shadow-2xl py-1 z-50">
+                        <!-- Dynamic model options -->
                     </div>
                 </div>
             </div>
@@ -203,153 +230,121 @@
                 <button id="stop-speaking-btn" class="hidden px-2.5 py-1 rounded-full bg-red-500/20 text-red-400 hover:bg-red-500/30 text-xs font-medium flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-volume-xmark"></i> Stop Speech
                 </button>
-                <div class="w-2 h-2 rounded-full bg-brandGreen animate-pulse" title="Connected to Pollinations AI"></div>
+                <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-800 border border-zinc-700 text-xs text-zinc-300">
+                    <span class="w-2 h-2 rounded-full bg-brandGreen animate-pulse"></span>
+                    <span>slxa online</span>
+                </div>
             </div>
         </header>
 
-        <!-- Messages Scrolling Container -->
+        <!-- Chat Scrolling Messages Area -->
         <div id="chat-container" class="flex-1 overflow-y-auto px-4 md:px-0 py-6 space-y-6">
-            
-            <!-- Empty Welcome View -->
-            <div id="welcome-view" class="h-full max-w-2xl mx-auto flex flex-col items-center justify-center text-center p-6 my-auto">
-                <div class="w-12 h-12 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-brandGreen text-2xl mb-4 shadow-lg">
-                    <i class="fa-solid fa-sparkles"></i>
-                </div>
-                <h1 class="text-2xl font-bold text-white mb-2">How can I help you today?</h1>
-                <p class="text-sm text-zinc-400 mb-8 max-w-md">Conversational AI with memory, text-to-speech, and reasoning model support powered by Pollinations AI.</p>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-                    <button class="quick-prompt p-3.5 rounded-xl bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 text-left transition group">
-                        <div class="text-xs font-semibold text-slate-200 group-hover:text-brandGreen mb-1">Human Conversation</div>
-                        <div class="text-xs text-zinc-400 truncate">Tell me an interesting fun fact about the universe</div>
-                    </button>
-                    <button class="quick-prompt p-3.5 rounded-xl bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 text-left transition group">
-                        <div class="text-xs font-semibold text-slate-200 group-hover:text-brandGreen mb-1">Code & Debugging</div>
-                        <div class="text-xs text-zinc-400 truncate">Write a Python script to fetch weather data</div>
-                    </button>
-                    <button class="quick-prompt p-3.5 rounded-xl bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 text-left transition group">
-                        <div class="text-xs font-semibold text-slate-200 group-hover:text-brandGreen mb-1">Creative Writing</div>
-                        <div class="text-xs text-zinc-400 truncate">Draft a friendly email inviting a team to lunch</div>
-                    </button>
-                    <button class="quick-prompt p-3.5 rounded-xl bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 text-left transition group">
-                        <div class="text-xs font-semibold text-slate-200 group-hover:text-brandGreen mb-1">Reasoning & Logic</div>
-                        <div class="text-xs text-zinc-400 truncate">Solve a step-by-step logic puzzle for me</div>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Messages Stream Area -->
             <div id="messages-list" class="max-w-3xl mx-auto space-y-6"></div>
         </div>
 
-        <!-- Sticky Bottom Chat Input -->
+        <!-- Sticky Bottom Chat Input Container -->
         <div class="p-4 bg-gptBg">
             <div class="max-w-3xl mx-auto relative">
+                
+                <!-- Attached Image Preview Container -->
+                <div id="image-preview-container" class="hidden mb-2 relative inline-block">
+                    <img id="image-preview" src="" alt="Homework preview" class="h-20 w-auto rounded-lg border border-brandGreen object-cover shadow-lg">
+                    <button id="remove-image-btn" type="button" class="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shadow-md">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Chat Input Form -->
                 <form id="chat-form" class="relative bg-gptInput border border-zinc-700/70 rounded-2xl p-2 shadow-2xl focus-within:border-zinc-500 transition">
-                    <textarea 
-                        id="user-input" 
-                        rows="1" 
-                        placeholder="Message ChatGPT..." 
-                        class="w-full bg-transparent text-slate-100 placeholder-zinc-500 px-3 py-2 pr-12 focus:outline-none resize-none max-h-40 text-sm md:text-base"
-                    ></textarea>
+                    <!-- File Input Hidden -->
+                    <input type="file" id="image-input" accept="image/*" class="hidden">
                     
-                    <div class="absolute right-2.5 bottom-2.5 flex items-center gap-1.5">
-                        <button 
-                            type="button" 
-                            id="stop-btn" 
-                            class="hidden w-8 h-8 rounded-full bg-zinc-700 hover:bg-zinc-600 text-slate-200 transition flex items-center justify-center text-xs"
-                            title="Stop Generating"
-                        >
-                            <i class="fa-solid fa-square"></i>
+                    <div class="flex items-end gap-2 px-1">
+                        <!-- Upload Image Button -->
+                        <button type="button" id="upload-image-btn" class="p-2 text-zinc-400 hover:text-brandGreen hover:bg-zinc-800 rounded-xl transition flex items-center justify-center" title="Upload Homework or Math Problem Image">
+                            <i class="fa-solid fa-paperclip text-lg"></i>
                         </button>
-                        <button 
-                            type="submit" 
-                            id="send-btn" 
-                            class="w-8 h-8 rounded-full bg-white text-black hover:bg-slate-200 transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-xs font-bold"
-                        >
-                            <i class="fa-solid fa-arrow-up"></i>
-                        </button>
+
+                        <!-- Text Input -->
+                        <textarea 
+                            id="user-input" 
+                            rows="1" 
+                            placeholder="Ask slxa a homework question or upload an algebra problem..." 
+                            class="w-full bg-transparent text-slate-100 placeholder-zinc-500 py-2 focus:outline-none resize-none max-h-40 text-sm md:text-base leading-relaxed"
+                        ></textarea>
+
+                        <!-- Action Buttons -->
+                        <div class="flex items-center gap-1">
+                            <button 
+                                type="button" 
+                                id="stop-btn" 
+                                class="hidden w-8 h-8 rounded-full bg-zinc-700 hover:bg-zinc-600 text-slate-200 transition flex items-center justify-center text-xs"
+                                title="Stop Generating"
+                            >
+                                <i class="fa-solid fa-square"></i>
+                            </button>
+                            <button 
+                                type="submit" 
+                                id="send-btn" 
+                                class="w-8 h-8 rounded-full bg-white text-black hover:bg-slate-200 transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-xs font-bold"
+                            >
+                                <i class="fa-solid fa-arrow-up"></i>
+                            </button>
+                        </div>
                     </div>
                 </form>
-                <div class="text-center mt-2">
-                    <span class="text-[11px] text-zinc-500">Pollinations AI may output inaccurate information. Check important info.</span>
+                <div class="text-center mt-2 flex items-center justify-center gap-3 text-[11px] text-zinc-500">
+                    <span>slxa by eyob • TikTok & Instagram: @slxa19</span>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Settings Modal -->
-    <div id="settings-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl">
-            <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                <h2 class="text-base font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-sliders text-brandGreen"></i> Model & Persona Settings
-                </h2>
-                <button id="close-settings-btn" class="text-zinc-400 hover:text-white">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <!-- System Prompt -->
-            <div class="space-y-1.5">
-                <label for="system-prompt" class="text-xs font-medium text-zinc-300">System Persona Instructions</label>
-                <textarea id="system-prompt" rows="4" class="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandGreen resize-none" placeholder="Give instructions to the AI..."></textarea>
-                <p class="text-[11px] text-zinc-500">Guides how warm, human, or concise the model responds across all turns.</p>
-            </div>
-
-            <!-- Temperature -->
-            <div class="space-y-2">
-                <div class="flex justify-between items-center">
-                    <label for="temperature" class="text-xs font-medium text-zinc-300">Creativity (Temperature)</label>
-                    <span id="temp-val" class="text-xs font-mono font-bold text-brandGreen">0.7</span>
-                </div>
-                <input id="temperature" type="range" min="0" max="1.5" step="0.1" value="0.7" class="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-brandGreen">
-            </div>
-
-            <div class="pt-2 flex justify-end">
-                <button id="save-settings-btn" class="px-4 py-2 bg-brandGreen hover:bg-brandGreenHover text-white rounded-xl text-xs font-semibold transition">
-                    Save Changes
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Application Script -->
+    <!-- Application JavaScript Logic -->
     <script>
-        // Default Configs
-        const DEFAULT_SYSTEM_PROMPT = "You are a warm, highly intelligent, human-like AI companion. Speak conversationally, clearly, and naturally like an empathetic friend and expert. Avoid overly robotic phrasing or unnecessary preamble.";
-        
+        // System Persona Definition
+        const INITIAL_GREETING = "Hello! I'm slxa, an AI created by eyob that can help you with your homework. Follow My TikTok and Instagram : slxa19";
+        const SYSTEM_PROMPT = `You are "slxa", an advanced AI assistant created by "eyob". Your primary expertise is helping students with homework, algebra, mathematics, science, coding, and general study topics.
+When solving math or algebra problems:
+1. Provide step-by-step clear explanations.
+2. Format all mathematical symbols and equations using LaTeX syntax enclosed in standard single dollar signs ($e=mc^2$) for inline math or double dollar signs ($$\\frac{a}{b}$$) for block math.
+3. If an image is provided, carefully read the problem or handwritten algebra equations and solve them completely.
+Always maintain a helpful, friendly, and smart persona.`;
+
         // Application State
         const state = {
-            sessions: [], // Array of { id, title, messages, model, systemPrompt }
+            sessions: [],
             currentSessionId: null,
             isGenerating: false,
             abortController: null,
             selectedModel: 'openai',
-            systemPrompt: DEFAULT_SYSTEM_PROMPT,
-            temperature: 0.7,
+            attachedBase64Image: null,
             autoSpeak: false,
             selectedVoice: null,
             availableVoices: [],
             availableModels: [
-                { id: 'openai', name: 'ChatGPT (OpenAI Standard)' },
-                { id: 'qwen', name: 'Qwen AI' },
+                { id: 'openai', name: 'slxa Standard (GPT-4o Vision)' },
+                { id: 'qwen', name: 'Qwen AI (Math & Reasoning)' },
                 { id: 'llama', name: 'Meta LLaMA 3' },
                 { id: 'mistral', name: 'Mistral AI' },
-                { id: 'deepseek', name: 'DeepSeek / Reasoning Model' }
+                { id: 'deepseek', name: 'DeepSeek Reasoning' }
             ]
         };
 
         // DOM Elements
         const chatContainer = document.getElementById('chat-container');
         const messagesList = document.getElementById('messages-list');
-        const welcomeView = document.getElementById('welcome-view');
         const chatForm = document.getElementById('chat-form');
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
         const stopBtn = document.getElementById('stop-btn');
-        
-        // Sidebar & UI Elements
+        const imageInput = document.getElementById('image-input');
+        const uploadImageBtn = document.getElementById('upload-image-btn');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const imagePreview = document.getElementById('image-preview');
+        const removeImageBtn = document.getElementById('remove-image-btn');
+
+        // Sidebar & Header DOM
         const sidebar = document.getElementById('sidebar');
         const sidebarBackdrop = document.getElementById('sidebar-backdrop');
         const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
@@ -358,24 +353,15 @@
         const newChatBtn = document.getElementById('new-chat-btn');
         const clearAllSessionsBtn = document.getElementById('clear-all-sessions-btn');
 
-        // Dropdown & Settings Elements
+        // Dropdowns & Voice DOM
         const modelDropdownBtn = document.getElementById('model-dropdown-btn');
         const modelDropdownMenu = document.getElementById('model-dropdown-menu');
         const currentModelName = document.getElementById('current-model-name');
-        const openSettingsBtn = document.getElementById('open-settings-btn');
-        const closeSettingsBtn = document.getElementById('close-settings-btn');
-        const settingsModal = document.getElementById('settings-modal');
-        const systemPromptInput = document.getElementById('system-prompt');
-        const tempSlider = document.getElementById('temperature');
-        const tempVal = document.getElementById('temp-val');
-        const saveSettingsBtn = document.getElementById('save-settings-btn');
-
-        // Speech Elements
         const autoSpeakToggle = document.getElementById('auto-speak-toggle');
         const voiceSelect = document.getElementById('voice-select');
         const stopSpeakingBtn = document.getElementById('stop-speaking-btn');
 
-        // Initializer
+        // Initialization
         document.addEventListener('DOMContentLoaded', () => {
             configureMarkdown();
             loadSpeechVoices();
@@ -392,7 +378,7 @@
             }
         });
 
-        // Setup Markdown Converter
+        // Markdown Setup
         function configureMarkdown() {
             marked.setOptions({
                 highlight: function(code, lang) {
@@ -417,7 +403,6 @@
                         voiceSelect.appendChild(opt);
                     });
                 };
-
                 updateVoiceList();
                 if (window.speechSynthesis.onvoiceschanged !== undefined) {
                     window.speechSynthesis.onvoiceschanged = updateVoiceList;
@@ -427,27 +412,26 @@
             }
         }
 
-        // Speak Text Function
+        // Text-to-Speech Function
         function speakText(text) {
             if (!('speechSynthesis' in window)) return;
             
-            window.speechSynthesis.cancel(); // Stop current speech
+            window.speechSynthesis.cancel();
             stopSpeakingBtn.classList.remove('hidden');
 
-            // Strip markdown formatting tags for cleaner audio output
+            // Strip mathematical markdown & code for fluid spoken reading
             const plainText = text.replace(/```[\s\S]*?```/g, ' Code snippet omitted. ')
-                                  .replace(/`([^`]+)`/g, '$1')
+                                  .replace(/\$\$[\s\S]*?\$\$/g, ' Math formula ')
+                                  .replace(/\$[^$]+\$/g, ' formula ')
                                   .replace(/[*_~#]/g, '')
                                   .trim();
 
             if (!plainText) return;
 
             const utterance = new SpeechSynthesisUtterance(plainText);
-            
             if (state.selectedVoice !== null && state.availableVoices[state.selectedVoice]) {
                 utterance.voice = state.availableVoices[state.selectedVoice];
             }
-
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
 
@@ -459,7 +443,6 @@
 
         // Event Listeners
         function setupEventListeners() {
-            // Textarea Auto-Resize & Submit on Enter
             userInput.addEventListener('input', () => {
                 userInput.style.height = 'auto';
                 userInput.style.height = Math.min(userInput.scrollHeight, 160) + 'px';
@@ -468,7 +451,7 @@
             userInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
-                    if (userInput.value.trim() && !state.isGenerating) {
+                    if ((userInput.value.trim() || state.attachedBase64Image) && !state.isGenerating) {
                         chatForm.dispatchEvent(new Event('submit'));
                     }
                 }
@@ -481,46 +464,24 @@
                 stopSpeakingBtn.classList.add('hidden');
             });
 
-            // Quick Prompts
-            document.querySelectorAll('.quick-prompt').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const promptText = btn.querySelector('.text-zinc-400').textContent;
-                    userInput.value = promptText;
-                    userInput.focus();
-                });
-            });
+            // Image Attachment Handlers
+            uploadImageBtn.addEventListener('click', () => imageInput.click());
+            imageInput.addEventListener('change', handleImageSelect);
+            removeImageBtn.addEventListener('click', clearAttachedImage);
 
-            // Sidebar Controls
+            // Sidebar & Navigation
             toggleSidebarBtn.addEventListener('click', openSidebar);
             closeSidebarBtn.addEventListener('click', closeSidebar);
             sidebarBackdrop.addEventListener('click', closeSidebar);
             newChatBtn.addEventListener('click', () => createNewSession());
             clearAllSessionsBtn.addEventListener('click', clearAllSessions);
 
-            // Model Dropdown
+            // Model Selector Dropdown
             modelDropdownBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 modelDropdownMenu.classList.toggle('hidden');
             });
             document.addEventListener('click', () => modelDropdownMenu.classList.add('hidden'));
-
-            // Settings Modal
-            openSettingsBtn.addEventListener('click', () => {
-                systemPromptInput.value = state.systemPrompt;
-                tempSlider.value = state.temperature;
-                tempVal.textContent = state.temperature;
-                settingsModal.classList.remove('hidden');
-            });
-            closeSettingsBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
-            tempSlider.addEventListener('input', (e) => tempVal.textContent = e.target.value);
-            
-            saveSettingsBtn.addEventListener('click', () => {
-                state.systemPrompt = systemPromptInput.value.trim() || DEFAULT_SYSTEM_PROMPT;
-                state.temperature = parseFloat(tempSlider.value);
-                saveStateToLocalStorage();
-                settingsModal.classList.add('hidden');
-                showToast('Settings saved!', 'success');
-            });
 
             // Voice Config
             autoSpeakToggle.addEventListener('change', (e) => {
@@ -533,7 +494,33 @@
             });
         }
 
-        // Render Supported Models Dropdown
+        // Image Attachment Handler
+        function handleImageSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select a valid image file.', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                state.attachedBase64Image = event.target.result;
+                imagePreview.src = event.target.result;
+                imagePreviewContainer.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearAttachedImage() {
+            state.attachedBase64Image = null;
+            imageInput.value = '';
+            imagePreview.src = '';
+            imagePreviewContainer.classList.add('hidden');
+        }
+
+        // Model Dropdown Renderer
         function renderModelDropdown() {
             modelDropdownMenu.innerHTML = '';
             state.availableModels.forEach(m => {
@@ -556,29 +543,24 @@
                 sessions: state.sessions,
                 currentSessionId: state.currentSessionId,
                 selectedModel: state.selectedModel,
-                systemPrompt: state.systemPrompt,
-                temperature: state.temperature,
                 autoSpeak: state.autoSpeak,
                 selectedVoice: state.selectedVoice
             };
-            localStorage.setItem('chatgpt_pollinations_state', JSON.stringify(dataToSave));
+            localStorage.setItem('slxa_chat_state', JSON.stringify(dataToSave));
         }
 
         function loadStateFromLocalStorage() {
-            const saved = localStorage.getItem('chatgpt_pollinations_state');
+            const saved = localStorage.getItem('slxa_chat_state');
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
                     state.sessions = parsed.sessions || [];
                     state.currentSessionId = parsed.currentSessionId || null;
                     state.selectedModel = parsed.selectedModel || 'openai';
-                    state.systemPrompt = parsed.systemPrompt || DEFAULT_SYSTEM_PROMPT;
-                    state.temperature = parsed.temperature !== undefined ? parsed.temperature : 0.7;
                     state.autoSpeak = parsed.autoSpeak || false;
                     state.selectedVoice = parsed.selectedVoice !== undefined ? parsed.selectedVoice : null;
 
                     autoSpeakToggle.checked = state.autoSpeak;
-                    
                     const mObj = state.availableModels.find(m => m.id === state.selectedModel);
                     if (mObj) currentModelName.textContent = mObj.name;
                 } catch (e) {
@@ -598,12 +580,17 @@
             sidebarBackdrop.classList.add('hidden');
         }
 
-        // Sessions Management
+        // Session Handling
         function createNewSession() {
             const newSession = {
                 id: 'session-' + Date.now(),
-                title: 'New Chat',
-                messages: []
+                title: 'Homework Chat',
+                messages: [
+                    {
+                        role: 'assistant',
+                        content: INITIAL_GREETING
+                    }
+                ]
             };
             state.sessions.unshift(newSession);
             switchSession(newSession.id);
@@ -635,7 +622,7 @@
                 
                 div.innerHTML = `
                     <div class="flex items-center gap-2 truncate flex-1">
-                        <i class="fa-regular fa-message text-xs"></i>
+                        <i class="fa-regular fa-message text-xs text-brandGreen"></i>
                         <span class="truncate">${escapeHtml(sess.title)}</span>
                     </div>
                     <button class="delete-sess-btn hidden group-hover:block p-1 text-zinc-500 hover:text-red-400 transition" title="Delete session">
@@ -678,24 +665,18 @@
         // Render Conversation Messages
         function renderMessages() {
             const currentSession = getCurrentSession();
-            if (!currentSession || currentSession.messages.length === 0) {
-                welcomeView.style.display = 'flex';
-                messagesList.innerHTML = '';
-                return;
-            }
+            if (!currentSession) return;
 
-            welcomeView.style.display = 'none';
             messagesList.innerHTML = '';
-
             currentSession.messages.forEach(msg => {
-                appendMessageToDOM(msg.role, msg.content, msg.reasoning || null, false);
+                appendMessageToDOM(msg.role, msg.content, msg.imageUrl || null, msg.reasoning || null, false);
             });
 
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // Append Single Message Row
-        function appendMessageToDOM(role, content, reasoning = null, isStreaming = false, customId = null) {
+        // Render Individual Message
+        function appendMessageToDOM(role, content, imageUrl = null, reasoning = null, isStreaming = false, customId = null) {
             const isUser = role === 'user';
             const msgDiv = document.createElement('div');
             msgDiv.className = `flex gap-3 md:gap-4 ${isUser ? 'justify-end' : 'justify-start'} animate-fade-in`;
@@ -706,10 +687,16 @@
                     <i class="fa-solid fa-user"></i>
                 </div>
             ` : `
-                <div class="w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700 text-brandGreen flex items-center justify-center text-xs font-bold shrink-0">
-                    <i class="fa-solid fa-sparkles"></i>
+                <div class="w-7 h-7 rounded-full bg-zinc-800 border border-brandGreen/50 text-brandGreen flex items-center justify-center text-xs font-bold shrink-0">
+                    s
                 </div>
             `;
+
+            // Display Attached Image if Present
+            let imageHTML = '';
+            if (imageUrl) {
+                imageHTML = `<div class="mb-2"><img src="${imageUrl}" class="max-h-60 rounded-xl border border-zinc-700 object-contain"></div>`;
+            }
 
             // Reasoning / Thinking Box
             let reasoningHTML = '';
@@ -732,20 +719,21 @@
                 ${!isUser ? avatar : ''}
                 <div class="max-w-[88%] md:max-w-[80%] space-y-1">
                     <div class="${bodyClass}">
+                        ${imageHTML}
                         ${reasoningHTML}
                         <div class="msg-content markdown-body ${isStreaming ? 'typing-cursor' : ''}">${isUser ? escapeHtml(content) : marked.parse(content || '')}</div>
                     </div>
                     ${!isUser ? `
                         <div class="flex items-center gap-3 pt-1 text-[11px] text-zinc-500">
-                            <button class="copy-btn hover:text-slate-300 transition" title="Copy Message"><i class="fa-regular fa-copy"></i> Copy</button>
-                            <button class="speak-btn hover:text-slate-300 transition" title="Read Aloud"><i class="fa-solid fa-volume-high"></i> Listen</button>
+                            <button class="copy-btn hover:text-slate-300 transition"><i class="fa-regular fa-copy"></i> Copy</button>
+                            <button class="speak-btn hover:text-slate-300 transition"><i class="fa-solid fa-volume-high"></i> Listen</button>
                         </div>
                     ` : ''}
                 </div>
                 ${isUser ? avatar : ''}
             `;
 
-            // Attach Copy & Speech Actions
+            // Action Handlers
             if (!isUser) {
                 msgDiv.querySelector('.copy-btn').addEventListener('click', () => {
                     copyToClipboard(content);
@@ -757,51 +745,81 @@
             }
 
             messagesList.appendChild(msgDiv);
+
+            // Render LaTeX Equations with KaTeX
+            if (!isUser && window.renderMathInElement) {
+                renderMathInElement(msgDiv.querySelector('.msg-content'), {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false},
+                        {left: '\\[', right: '\\]', display: true}
+                    ],
+                    throwOnError: false
+                });
+            }
+
             chatContainer.scrollTop = chatContainer.scrollHeight;
             return msgDiv;
         }
 
-        // Handle User Submission
+        // Submit User Question & Attached Homework Image
         async function handleMessageSubmit(e) {
             e.preventDefault();
             const text = userInput.value.trim();
-            if (!text || state.isGenerating) return;
+            const image = state.attachedBase64Image;
+
+            if ((!text && !image) || state.isGenerating) return;
 
             const session = getCurrentSession();
             if (!session) return;
 
-            // Set Title for first message
-            if (session.messages.length === 0) {
+            // Set Chat Title from prompt
+            if (session.messages.length <= 1 && text) {
                 session.title = text.slice(0, 30) + (text.length > 30 ? '...' : '');
                 renderSessionsList();
             }
 
-            welcomeView.style.display = 'none';
+            // Append User Message
+            const userMsgObj = { role: 'user', content: text || 'Please solve this homework/algebra problem.' };
+            if (image) userMsgObj.imageUrl = image;
 
-            // Add User Message to Memory & UI
-            session.messages.push({ role: 'user', content: text });
-            appendMessageToDOM('user', text);
+            session.messages.push(userMsgObj);
+            appendMessageToDOM('user', userMsgObj.content, image);
 
+            // Clear Input
             userInput.value = '';
             userInput.style.height = 'auto';
+            clearAttachedImage();
 
             setGeneratingState(true);
 
-            // Placeholder for AI Assistant Response
+            // AI Response Placeholder
             const tempMsgId = 'ai-msg-' + Date.now();
-            appendMessageToDOM('assistant', '', null, true, tempMsgId);
+            appendMessageToDOM('assistant', '', null, null, true, tempMsgId);
 
             await generateResponse(session, tempMsgId);
         }
 
-        // Generate Streamed LLM Response with Memory
+        // Call Pollinations AI API with Multimodal Vision Payload
         async function generateResponse(session, elementId) {
             state.abortController = new AbortController();
 
-            // Construct payload with system prompt & conversation context
+            // Construct API Payload with History & Vision Image URLs
             const payloadMessages = [
-                { role: 'system', content: state.systemPrompt },
-                ...session.messages.map(m => ({ role: m.role, content: m.content }))
+                { role: 'system', content: SYSTEM_PROMPT },
+                ...session.messages.map(m => {
+                    if (m.imageUrl) {
+                        return {
+                            role: m.role,
+                            content: [
+                                { type: 'text', text: m.content || 'Solve or read this image:' },
+                                { type: 'image_url', image_url: { url: m.imageUrl } }
+                            ]
+                        };
+                    }
+                    return { role: m.role, content: m.content };
+                })
             ];
 
             const msgDiv = document.getElementById(elementId);
@@ -817,13 +835,13 @@
                     body: JSON.stringify({
                         messages: payloadMessages,
                         model: state.selectedModel,
-                        temperature: state.temperature,
+                        temperature: 0.5,
                         stream: true
                     }),
                     signal: state.abortController.signal
                 });
 
-                if (!response.ok) throw new Error(`API returned ${response.status}`);
+                if (!response.ok) throw new Error(`API error HTTP ${response.status}`);
 
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder('utf-8');
@@ -850,7 +868,6 @@
                                 const delta = parsed.choices?.[0]?.delta;
 
                                 if (delta) {
-                                    // Separate Reasoning/Thinking tokens from actual Response tokens
                                     if (delta.reasoning || delta.thought) {
                                         accumulatedReasoning += (delta.reasoning || delta.thought);
                                     }
@@ -859,15 +876,13 @@
                                     }
                                 }
                             } catch {
-                                // If plain non-SSE string
                                 accumulatedText += dataStr;
                             }
                         } else {
-                            // Raw fallback
                             accumulatedText += trimmed + '\n';
                         }
 
-                        // Update reasoning UI dynamically if model is thinking
+                        // Update reasoning UI if model is thinking
                         if (accumulatedReasoning && !msgDiv.querySelector('details')) {
                             const details = document.createElement('details');
                             details.className = 'mb-3 border border-zinc-700/60 rounded-lg bg-zinc-900/50 text-xs';
@@ -884,13 +899,27 @@
                             msgDiv.querySelector('.reasoning-body').textContent = accumulatedReasoning;
                         }
 
-                        // Progressive Markdown Render for content
+                        // Stream Markdown Render
                         contentContainer.innerHTML = marked.parse(accumulatedText);
+                        
+                        // Render math in real-time if KaTeX available
+                        if (window.renderMathInElement) {
+                            renderMathInElement(contentContainer, {
+                                delimiters: [
+                                    {left: '$$', right: '$$', display: true},
+                                    {left: '$', right: '$', display: false},
+                                    {left: '\\(', right: '\\)', display: false},
+                                    {left: '\\[', right: '\\]', display: true}
+                                ],
+                                throwOnError: false
+                            });
+                        }
+
                         chatContainer.scrollTop = chatContainer.scrollHeight;
                     }
                 }
 
-                // Append Assistant message to conversation session history
+                // Append finalized message to history
                 const finalMsgObj = { 
                     role: 'assistant', 
                     content: accumulatedText,
@@ -899,22 +928,22 @@
                 session.messages.push(finalMsgObj);
                 saveStateToLocalStorage();
 
-                // Trigger voice speech synthesis if enabled
+                // Speak response if voice active
                 if (state.autoSpeak && accumulatedText) {
                     speakText(accumulatedText);
                 }
 
             } catch (err) {
                 if (err.name === 'AbortError') {
-                    showToast('Response stopped by user.', 'info');
+                    showToast('Response stopped.', 'info');
                     if (accumulatedText) {
                         session.messages.push({ role: 'assistant', content: accumulatedText, reasoning: accumulatedReasoning });
                         saveStateToLocalStorage();
                     }
                 } else {
                     console.error(err);
-                    showToast('Failed to connect to Pollinations AI.', 'error');
-                    contentContainer.innerHTML = `<span class="text-red-400"><i class="fa-solid fa-circle-exclamation me-1"></i> Error generating response. Please try again or switch model.</span>`;
+                    showToast('Failed to connect to slxa server.', 'error');
+                    contentContainer.innerHTML = `<span class="text-red-400"><i class="fa-solid fa-triangle-exclamation me-1"></i> Connection error. Please try again or re-upload the image.</span>`;
                 }
             } finally {
                 contentContainer.classList.remove('typing-cursor');
@@ -926,7 +955,7 @@
             }
         }
 
-        // Stop Ongoing Generation
+        // Stop Generation
         function stopGeneration() {
             if (state.abortController) {
                 state.abortController.abort();
@@ -941,7 +970,7 @@
             stopBtn.classList.toggle('hidden', !isGenerating);
         }
 
-        // Toast Helper
+        // Helper: Toast Notifications
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -959,7 +988,7 @@
             }, 3000);
         }
 
-        // Helper: Clipboard Copy
+        // Helper: Copy Text
         function copyToClipboard(text) {
             if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(text);
@@ -976,7 +1005,7 @@
             }
         }
 
-        // Helper: HTML Escaping
+        // Helper: Escape HTML
         function escapeHtml(str) {
             return (str || '').replace(/[&<>"']/g, function(m) {
                 return {
